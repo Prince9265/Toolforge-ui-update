@@ -8,6 +8,13 @@ import {
   PasswordHashGenerator,
   WordCounter,
 } from "./web";
+import {
+  AiPromptFormatter,
+  CodeToImage,
+  CronExplainer,
+  GradientGlassGenerator,
+  TextToSpeechReader,
+} from "./studio";
 import { legacyRegistry } from "@/legacy/registry";
 
 export const toolRegistry: Record<string, ComponentType> = {
@@ -26,4 +33,9 @@ export const toolRegistry: Record<string, ComponentType> = {
   "meta-tag-generator": MetaTagGenerator,
   "password-hash-generator": PasswordHashGenerator,
   "word-counter": WordCounter,
+  "code-to-image": CodeToImage,
+  "cron-explainer": CronExplainer,
+  "gradient-glass-generator": GradientGlassGenerator,
+  "ai-prompt-formatter": AiPromptFormatter,
+  "text-to-speech": TextToSpeechReader,
 };

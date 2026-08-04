@@ -207,6 +207,54 @@ const baseTools: ToolMeta[] = [
     keywords: ["word counter", "character counter", "reading time"],
     popular: true,
   },
+  {
+    slug: "code-to-image",
+    name: "Code Snippet to Image",
+    category: "dev",
+    short: "Turn code into a shareable, syntax-highlighted PNG.",
+    description:
+      "Paste any snippet and export a beautiful dark-mode code image with a gradient backdrop, window chrome, line numbers and syntax highlighting — rendered on canvas in your browser and downloadable as PNG.",
+    keywords: ["code to image", "carbon alternative", "code screenshot generator"],
+    popular: true,
+  },
+  {
+    slug: "cron-explainer",
+    name: "Cron Expression Explainer",
+    category: "dev",
+    short: "Decode cron syntax and preview the next five runs.",
+    description:
+      "Translate any 5-field cron expression into plain English, inspect each field, and see exactly when the job fires next — with one-click presets for the most common schedules.",
+    keywords: ["cron parser", "crontab explained", "cron next run"],
+  },
+  {
+    slug: "gradient-glass-generator",
+    name: "CSS Gradient & Glassmorphism",
+    category: "web",
+    short: "Design gradients and frosted-glass cards, copy the CSS.",
+    description:
+      "Interactive sliders for angle, colour stops, blur, saturation, opacity and radius with a live preview — copy production-ready linear-gradient and backdrop-filter CSS instantly.",
+    keywords: ["css gradient generator", "glassmorphism generator", "backdrop filter css"],
+    popular: true,
+  },
+  {
+    slug: "ai-prompt-formatter",
+    name: "AI Prompt Formatter",
+    category: "ai",
+    short: "Refine a rough idea into a structured ChatGPT, Claude or Midjourney prompt.",
+    description:
+      "Choose your target model and ToolForge restructures your idea into the format that model responds best to — Markdown sections for ChatGPT, XML tags for Claude, and parameterised image syntax for Midjourney.",
+    keywords: ["prompt formatter", "claude xml prompt", "midjourney prompt builder"],
+    popular: true,
+  },
+  {
+    slug: "text-to-speech",
+    name: "Text to Speech Reader",
+    category: "web",
+    short: "Listen to any text with adjustable voice, speed and pitch.",
+    description:
+      "Paste an article, script or study notes and have your device read it aloud using the built-in speech engine — pick a voice, tune rate and pitch, no uploads and no account.",
+    keywords: ["text to speech", "read aloud tool", "tts online free"],
+  },
 ];
 
 export const tools: ToolMeta[] = [...baseTools, ...legacyTools];

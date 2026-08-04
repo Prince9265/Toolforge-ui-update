@@ -18,6 +18,7 @@ import { Route as DisclaimerRouteImport } from './routes/disclaimer'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as CategoryCategoryIdRouteImport } from './routes/category.$categoryId'
 import { Route as CategoryIdRouteImport } from './routes/category.$id'
 import { Route as ToolsSlugRouteImport } from './routes/tools.$slug'
 
@@ -66,6 +67,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategoryCategoryIdRoute = CategoryCategoryIdRouteImport.update({
+  id: '/category/$categoryId',
+  path: '/category/$categoryId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategoryIdRoute = CategoryIdRouteImport.update({
   id: '/category/$id',
   path: '/category/$id',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/favorites': typeof FavoritesRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/category/$categoryId': typeof CategoryCategoryIdRoute
   '/category/$id': typeof CategoryIdRoute
   '/tools/$slug': typeof ToolsSlugRoute
 }
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/favorites': typeof FavoritesRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/category/$categoryId': typeof CategoryCategoryIdRoute
   '/category/$id': typeof CategoryIdRoute
   '/tools/$slug': typeof ToolsSlugRoute
 }
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/favorites': typeof FavoritesRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/category/$categoryId': typeof CategoryCategoryIdRoute
   '/category/$id': typeof CategoryIdRoute
   '/tools/$slug': typeof ToolsSlugRoute
 }
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/privacy'
     | '/terms'
+    | '/category/$categoryId'
     | '/category/$id'
     | '/tools/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/privacy'
     | '/terms'
+    | '/category/$categoryId'
     | '/category/$id'
     | '/tools/$slug'
   id:
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/privacy'
     | '/terms'
+    | '/category/$categoryId'
     | '/category/$id'
     | '/tools/$slug'
   fileRoutesById: FileRoutesById
@@ -169,6 +181,7 @@ export interface RootRouteChildren {
   FavoritesRoute: typeof FavoritesRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
+  CategoryCategoryIdRoute: typeof CategoryCategoryIdRoute
   CategoryIdRoute: typeof CategoryIdRoute
   ToolsSlugRoute: typeof ToolsSlugRoute
 }
@@ -238,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/category/$categoryId': {
+      id: '/category/$categoryId'
+      path: '/category/$categoryId'
+      fullPath: '/category/$categoryId'
+      preLoaderRoute: typeof CategoryCategoryIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/category/$id': {
       id: '/category/$id'
       path: '/category/$id'
@@ -265,6 +285,7 @@ const rootRouteChildren: RootRouteChildren = {
   FavoritesRoute: FavoritesRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
+  CategoryCategoryIdRoute: CategoryCategoryIdRoute,
   CategoryIdRoute: CategoryIdRoute,
   ToolsSlugRoute: ToolsSlugRoute,
 }

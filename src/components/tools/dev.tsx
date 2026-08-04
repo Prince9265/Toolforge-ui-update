@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
-import { Copy, Braces, ShieldAlert, AlignLeft, Minimize2 } from "lucide-react";
-import { ActionButton, Panel, TextArea, TextField } from "@/components/ToolKit";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { Copy, Braces, ShieldAlert, AlignLeft, Minimize2, KeyRound } from "lucide-react";
+import { ActionButton, CopyResultButton, Panel, TextArea, TextField } from "@/components/ToolKit";
 import { copyText } from "./ai";
 
 /* ------------------------------ JSON Formatter -------------------------------- */
@@ -119,38 +119,154 @@ function b64url(input: string) {
   );
 }
 
+function sampleValidJwt() {
+  const enc = (o: unknown) =>
+    btoa(JSON.stringify(o)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const now = Math.floor(Date.now() / 1000);
+  return `${enc({ alg: "HS256", typ: "JWT" })}.${enc({
+    sub: "1234567890",
+    name: "Ada Lovelace",
+    role: "admin",
+    iss: "https://auth.toolforge.dev",
+    aud: "toolforge-web",
+    iat: now,
+    exp: now + 3600,
+  })}.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`;
+}
+
+function sampleExpiredJwt() {
+  const enc = (o: unknown) =>
+    btoa(JSON.stringify(o)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const now = Math.floor(Date.now() / 1000);
+  return `${enc({ alg: "HS256", typ: "JWT" })}.${enc({
+    sub: "9876543210",
+    name: "Expired Session",
+    iss: "https://auth.toolforge.dev",
+    iat: now - 7200,
+    exp: now - 3600,
+  })}.4f7Rc0kQKuY0d1sZ3pQm2nOaUu9pVXKb0YHVQ7Zx1nE`;
+}
+
+function useNow(active: boolean) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!active) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [active]);
+  return now;
+}
+
+function countdown(ms: number) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(total / 86400);
+  const h = Math.floor((total % 86400) / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const sec = total % 60;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return d > 0 ? `${d}d ${pad(h)}:${pad(m)}:${pad(sec)}` : `${pad(h)}:${pad(m)}:${pad(sec)}`;
+}
+
+/** Color-coded JSON inspector card. */
+function JsonCard({
+  title,
+  icon,
+  accent,
+  json,
+  children,
+}: {
+  title: string;
+  icon: ReactNode;
+  accent: string;
+  json?: unknown;
+  children?: ReactNode;
+}) {
+  const text = json === undefined ? "" : JSON.stringify(json, null, 2);
+  return (
+    <section
+      className="relative overflow-hidden rounded-2xl border bg-card p-4 sm:p-5"
+      style={{ borderColor: `color-mix(in oklab, ${accent} 45%, transparent)` }}
+    >
+      <span
+        className="absolute inset-x-0 top-0 h-1"
+        style={{ background: accent }}
+        aria-hidden="true"
+      />
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+        <h3
+          className="flex min-w-0 items-center gap-2 truncate font-display text-sm font-bold tracking-[0.14em] uppercase"
+          style={{ color: accent }}
+        >
+          {icon}
+          {title}
+        </h3>
+        {text && <CopyResultButton value={text} label="Copy JSON" />}
+      </div>
+      {text && (
+        <pre
+          className="mt-3 max-h-72 overflow-auto rounded-xl border border-glass-border bg-surface p-3 font-mono text-xs leading-relaxed break-all whitespace-pre-wrap"
+          style={{ overflowWrap: "anywhere" }}
+        >
+          {text}
+        </pre>
+      )}
+      {children}
+    </section>
+  );
+}
+
 export function JwtDecoder() {
   const [token, setToken] = useState("");
 
   const decoded = useMemo(() => {
-    const parts = token.trim().split(".");
-    if (parts.length < 2) return null;
+    const raw = token.trim();
+    if (!raw) return null;
+    const parts = raw.split(".");
+    if (parts.length < 2) return { error: true as const };
     try {
       const header = JSON.parse(b64url(parts[0]!)) as Record<string, unknown>;
       const payload = JSON.parse(b64url(parts[1]!)) as Record<string, unknown>;
       const warnings: string[] = [];
-      if (String(header['alg']).toLowerCase() === "none")
+      if (String(header["alg"]).toLowerCase() === "none")
         warnings.push("alg is 'none' — the token is unsigned and trivially forgeable.");
-      if (!payload['exp']) warnings.push("No exp claim — this token never expires.");
-      else if (Number(payload['exp']) * 1000 < Date.now()) warnings.push("Token is expired.");
-      else if (Number(payload['exp']) - Number(payload['iat'] ?? 0) > 60 * 60 * 24 * 30)
+      if (!payload["exp"]) warnings.push("No exp claim — this token never expires.");
+      else if (Number(payload["exp"]) - Number(payload["iat"] ?? 0) > 60 * 60 * 24 * 30)
         warnings.push("Very long lifetime (>30 days) — consider shorter-lived tokens.");
-      if (!payload['iss']) warnings.push("No iss claim — issuer cannot be verified.");
+      if (!payload["iss"]) warnings.push("No iss claim — issuer cannot be verified.");
       if (!parts[2]) warnings.push("No signature segment present.");
-      return { header, payload, warnings };
+      return { header, payload, signature: parts[2] ?? "", warnings };
     } catch {
       return { error: true as const };
     }
   }, [token]);
+
+  const ok = decoded && !("error" in decoded);
+  const expSec = ok ? Number((decoded as { payload: Record<string, unknown> }).payload["exp"]) : NaN;
+  const hasExp = Number.isFinite(expSec) && expSec > 0;
+  const now = useNow(Boolean(ok) && hasExp);
+  const msLeft = hasExp ? expSec * 1000 - now : 0;
+  const expired = hasExp && msLeft <= 0;
 
   const fmtTime = (v: unknown) =>
     typeof v === "number" ? new Date(v * 1000).toLocaleString() : undefined;
 
   return (
     <div className="space-y-4">
-      <Panel title="JWT">
+      <Panel
+        title="Encoded token"
+        actions={
+          <>
+            <ActionButton variant="ghost" onClick={() => setToken(sampleValidJwt())}>
+              Load sample valid JWT
+            </ActionButton>
+            <ActionButton variant="ghost" onClick={() => setToken(sampleExpiredJwt())}>
+              Load expired JWT
+            </ActionButton>
+          </>
+        }
+      >
         <TextArea
-          rows={5}
+          rows={6}
           value={token}
           onChange={(e) => setToken(e.target.value)}
           placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…"
@@ -158,49 +274,124 @@ export function JwtDecoder() {
           spellCheck={false}
         />
         <p className="mt-2 text-xs text-muted-foreground">
-          Decoding happens in your browser. Nothing is uploaded — but never paste production tokens
-          into any tool you don't control.
+          Decoded live in your browser as you type. Nothing is uploaded — but never paste production
+          tokens into a tool you don't control.
         </p>
       </Panel>
 
       {decoded && "error" in decoded && (
-        <p role="alert" className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
-          That doesn't look like a valid JWT.
+        <p
+          role="alert"
+          className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
+        >
+          That doesn't look like a valid JWT. A token has three dot-separated base64url segments.
         </p>
       )}
 
-      {decoded && !("error" in decoded) && (
+      {ok && (
         <>
           <div className="grid gap-4 lg:grid-cols-2">
-            <Panel title="Header">
-              <pre className="overflow-auto rounded-xl border border-glass-border bg-surface p-3 font-mono text-xs">
-                {JSON.stringify(decoded.header, null, 2)}
-              </pre>
-            </Panel>
-            <Panel title="Payload">
-              <pre className="overflow-auto rounded-xl border border-glass-border bg-surface p-3 font-mono text-xs">
-                {JSON.stringify(decoded.payload, null, 2)}
-              </pre>
-              <dl className="mt-3 space-y-1 text-xs text-muted-foreground">
-                {fmtTime(decoded.payload['iat']) && <div>Issued: {fmtTime(decoded.payload['iat'])}</div>}
-                {fmtTime(decoded.payload['exp']) && <div>Expires: {fmtTime(decoded.payload['exp'])}</div>}
+            <JsonCard
+              title="Header"
+              accent="var(--color-info, #38bdf8)"
+              icon={<KeyRound className="size-4" aria-hidden="true" />}
+              json={(decoded as { header: unknown }).header}
+            >
+              <dl className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                <div className="rounded-lg border border-glass-border bg-surface p-2">
+                  <dt className="text-muted-foreground">Algorithm</dt>
+                  <dd className="font-mono font-semibold">
+                    {String((decoded as any).header["alg"] ?? "—")}
+                  </dd>
+                </div>
+                <div className="rounded-lg border border-glass-border bg-surface p-2">
+                  <dt className="text-muted-foreground">Token type</dt>
+                  <dd className="font-mono font-semibold">
+                    {String((decoded as any).header["typ"] ?? "—")}
+                  </dd>
+                </div>
               </dl>
-            </Panel>
+            </JsonCard>
+
+            <JsonCard
+              title="Payload / claims"
+              accent="var(--primary)"
+              icon={<Braces className="size-4" aria-hidden="true" />}
+              json={(decoded as { payload: unknown }).payload}
+            >
+              <dl className="mt-3 space-y-2 text-xs">
+                <div className="rounded-lg border border-glass-border bg-surface p-2">
+                  <dt className="text-muted-foreground">Issued at</dt>
+                  <dd className="font-semibold">
+                    {fmtTime((decoded as any).payload["iat"]) ?? "Not present"}
+                  </dd>
+                </div>
+                <div className="rounded-lg border border-glass-border bg-surface p-2">
+                  <dt className="text-muted-foreground">Expires</dt>
+                  <dd className="font-semibold">
+                    {hasExp ? fmtTime(expSec) : "Never (no exp claim)"}
+                  </dd>
+                  {hasExp && (
+                    <dd
+                      className={`mt-1 font-mono text-sm font-bold ${expired ? "text-destructive" : "text-success"}`}
+                      aria-live="polite"
+                    >
+                      {expired ? "Expired" : `Expires in ${countdown(msLeft)}`}
+                    </dd>
+                  )}
+                </div>
+              </dl>
+            </JsonCard>
           </div>
-          <Panel title="Security review">
-            {decoded.warnings.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No obvious issues found.</p>
-            ) : (
-              <ul className="space-y-2">
-                {decoded.warnings.map((w) => (
+
+          <JsonCard
+            title="Signature & security"
+            accent={expired ? "var(--destructive)" : "var(--color-success, #22c55e)"}
+            icon={<ShieldAlert className="size-4" aria-hidden="true" />}
+          >
+            <p className="mt-3 text-sm">
+              <span
+                className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold ${
+                  expired
+                    ? "bg-destructive/15 text-destructive"
+                    : (decoded as any).signature
+                      ? "bg-success/15 text-success"
+                      : "bg-destructive/15 text-destructive"
+                }`}
+              >
+                {expired
+                  ? "Token expired"
+                  : (decoded as any).signature
+                    ? "Signature segment present"
+                    : "No signature segment"}
+              </span>
+            </p>
+            {(decoded as any).signature && (
+              <pre
+                className="mt-3 rounded-xl border border-glass-border bg-surface p-3 font-mono text-xs break-all whitespace-pre-wrap"
+                style={{ overflowWrap: "anywhere" }}
+              >
+                {(decoded as any).signature}
+              </pre>
+            )}
+            <p className="mt-3 text-xs text-muted-foreground">
+              Cryptographic verification needs the issuer's secret or public key, so it can only be
+              done server-side. ToolForge checks structure, expiry and claim hygiene locally.
+            </p>
+            {(decoded as { warnings: string[] }).warnings.length > 0 && (
+              <ul className="mt-3 space-y-2">
+                {(decoded as { warnings: string[] }).warnings.map((w) => (
                   <li key={w} className="flex items-start gap-2 text-sm">
-                    <ShieldAlert className="mt-0.5 size-4 shrink-0 text-destructive" aria-hidden="true" />
+                    <ShieldAlert
+                      className="mt-0.5 size-4 shrink-0 text-destructive"
+                      aria-hidden="true"
+                    />
                     {w}
                   </li>
                 ))}
               </ul>
             )}
-          </Panel>
+          </JsonCard>
         </>
       )}
     </div>

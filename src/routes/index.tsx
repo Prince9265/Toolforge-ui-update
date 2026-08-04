@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence } from "motion/react";
 import { Search, Zap, ShieldCheck, Clock, Star } from "lucide-react";
 import { searchTools, tools, toolBySlug } from "@/lib/tools";
 import { ToolGrid } from "@/components/ToolCard";
@@ -44,6 +45,40 @@ export const Route = createFileRoute("/")({
 function Home() {
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState<string>("all");
+
+  // Restore the previous category + scroll position when coming back from a tool.
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("toolforge:restore-home") !== "1") return;
+      sessionStorage.removeItem("toolforge:restore-home");
+      const saved = JSON.parse(sessionStorage.getItem("toolforge:home-state") ?? "{}") as {
+        cat?: string;
+        scrollY?: number;
+      };
+      if (saved.cat) setCat(saved.cat);
+      if (saved.scrollY) requestAnimationFrame(() => window.scrollTo(0, saved.scrollY!));
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
+
+  useEffect(() => {
+    const save = () => {
+      try {
+        sessionStorage.setItem(
+          "toolforge:home-state",
+          JSON.stringify({ cat, scrollY: window.scrollY }),
+        );
+      } catch {
+        /* storage unavailable */
+      }
+    };
+    window.addEventListener("scroll", save, { passive: true });
+    return () => {
+      save();
+      window.removeEventListener("scroll", save);
+    };
+  }, [cat]);
   const { recent } = useRecentlyUsed();
   const { favorites } = useFavorites();
 
@@ -155,7 +190,9 @@ function Home() {
             No tools match “{query}”. Try a different keyword.
           </p>
         ) : (
-          <ToolGrid items={results} />
+          <AnimatePresence mode="wait" initial={false}>
+            <ToolGrid key={`${cat}-${query}`} items={results} />
+          </AnimatePresence>
         )}
 
         <AdWorkspaceNative />

@@ -1,5 +1,5 @@
 import { type ReactNode, useState } from 'react';
-import { Copy, Check, Download, Share2, RotateCcw, Link2, Mail, MessageCircle, Send, Facebook, Twitter } from 'lucide-react';
+import { Copy, Check, Download, Share2, RotateCcw, Link2, Mail, MessageCircle, Send, Facebook, Twitter, ClipboardPaste, Eraser } from 'lucide-react';
 import { useCopyToClipboard } from '@/legacy/hooks/useCopyToClipboard';
 import { useToast } from '@/legacy/contexts/ToastContext';
 import { Button } from '@/legacy/ui/Button';
@@ -13,15 +13,49 @@ interface ToolInputProps {
 }
 
 export function ToolInput({ value, onChange, placeholder, label, rows = 8 }: ToolInputProps) {
+  const { showToast } = useToast();
+
+  const paste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      onChange(text);
+      showToast('Pasted from clipboard', 'success');
+    } catch {
+      showToast('Clipboard blocked — use Ctrl/Cmd + V', 'error');
+    }
+  };
+
   return (
     <div className="space-y-2">
-      {label && <label className="text-sm font-medium text-foreground">{label}</label>}
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+        <label className="min-w-0 truncate text-sm font-medium text-foreground">{label ?? ''}</label>
+        <div className="flex shrink-0 items-center gap-1">
+          <Button variant="ghost" size="sm" onClick={paste} aria-label="Paste from clipboard">
+            <ClipboardPaste className="h-4 w-4" />
+            <span className="ml-1 hidden sm:inline">Paste</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              onChange('');
+              showToast('Input cleared', 'success');
+            }}
+            disabled={!value}
+            aria-label="Clear input"
+          >
+            <Eraser className="h-4 w-4" />
+            <span className="ml-1 hidden sm:inline">Clear</span>
+          </Button>
+        </div>
+      </div>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows}
-        className="w-full rounded-lg border border-input bg-background px-4 py-3 font-mono text-sm placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring transition-all resize-y"
+        style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}
+        className="w-full resize-y rounded-lg border border-input bg-background px-4 py-3 font-mono text-sm break-all whitespace-pre-wrap placeholder:text-muted-foreground transition-all focus-visible:ring-2 focus-visible:ring-ring"
         spellCheck={false}
       />
     </div>
@@ -132,7 +166,8 @@ export function ToolOutput({ value, placeholder, label, rows = 8, fileName = 'ou
         readOnly
         placeholder={placeholder}
         rows={rows}
-        className="w-full rounded-lg border border-input bg-muted/30 px-4 py-3 font-mono text-sm placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring transition-all resize-y"
+        style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}
+        className="w-full resize-y rounded-lg border border-input bg-muted/30 px-4 py-3 font-mono text-sm break-all whitespace-pre-wrap placeholder:text-muted-foreground transition-all focus-visible:ring-2 focus-visible:ring-ring"
         spellCheck={false}
       />
     </div>

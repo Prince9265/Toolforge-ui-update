@@ -1,5 +1,6 @@
-import { type ReactNode } from "react";
-import { Loader2 } from "lucide-react";
+import { type ReactNode, useRef } from "react";
+import { ClipboardPaste, Eraser, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const STEPS = ["Reading input", "Optimising", "Finalising output"];
 
@@ -92,11 +93,86 @@ export function ActionButton({
 }
 
 export function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+  const editable = !props.readOnly && !props.disabled;
+
+  /** Write a value into the textarea so React's own onChange handler fires. */
+  const setValue = (next: string) => {
+    const el = ref.current;
+    if (!el) return;
+    const setter = Object.getOwnPropertyDescriptor(
+      HTMLTextAreaElement.prototype,
+      "value",
+    )?.set;
+    setter?.call(el, next);
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+
   return (
-    <textarea
-      {...props}
-      className={`w-full resize-y rounded-xl border border-glass-border bg-surface p-3 font-mono text-sm leading-relaxed outline-none transition-colors placeholder:text-muted-foreground focus:border-primary ${props.className ?? ""}`}
-    />
+    <div className="relative">
+      <textarea
+        ref={ref}
+        {...props}
+        style={{ overflowWrap: "anywhere", wordBreak: "break-word", ...props.style }}
+        className={`w-full resize-y rounded-xl border border-glass-border bg-surface p-3 font-mono text-sm leading-relaxed break-all whitespace-pre-wrap outline-none transition-colors placeholder:text-muted-foreground focus:border-primary ${editable ? "pt-9" : ""} ${props.className ?? ""}`}
+      />
+      {editable && (
+        <div className="pointer-events-none absolute inset-x-2 top-1.5 flex justify-end gap-1">
+          <button
+            type="button"
+            aria-label="Paste from clipboard"
+            onClick={async () => {
+              try {
+                setValue(await navigator.clipboard.readText());
+                toast.success("Pasted from clipboard");
+              } catch {
+                toast.error("Clipboard blocked — use Ctrl/Cmd + V");
+              }
+            }}
+            className="pointer-events-auto inline-flex items-center gap-1 rounded-lg border border-glass-border bg-background/80 px-2 py-1 text-[11px] font-semibold text-muted-foreground backdrop-blur-md transition-colors hover:text-foreground"
+          >
+            <ClipboardPaste className="size-3.5" aria-hidden="true" />
+            Paste
+          </button>
+          <button
+            type="button"
+            aria-label="Clear input"
+            onClick={() => {
+              setValue("");
+              toast("Input cleared");
+            }}
+            className="pointer-events-auto inline-flex items-center gap-1 rounded-lg border border-glass-border bg-background/80 px-2 py-1 text-[11px] font-semibold text-muted-foreground backdrop-blur-md transition-colors hover:text-foreground"
+          >
+            <Eraser className="size-3.5" aria-hidden="true" />
+            Clear
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Copy-to-clipboard action with an instant toast confirmation. */
+export function CopyResultButton({ value, label = "Copy result" }: { value: string; label?: string }) {
+  return (
+    <ActionButton
+      variant="ghost"
+      ariaLabel={label}
+      onClick={async () => {
+        if (!value) {
+          toast.error("Nothing to copy yet");
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(value);
+          toast.success("Copied to clipboard");
+        } catch {
+          toast.error("Clipboard blocked by your browser");
+        }
+      }}
+    >
+      {label}
+    </ActionButton>
   );
 }
 

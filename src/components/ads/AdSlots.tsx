@@ -37,7 +37,7 @@ export function AdTopBanner({ className }: { className?: string }) {
   return (
     <aside
       aria-label="Advertisement"
-      className={cn("mx-auto my-6 w-full max-w-[760px]", className)}
+      className={cn("mx-auto my-6 w-full max-w-5xl", className)}
     >
       <Label />
       <div className="mt-1.5 h-[100px] w-full sm:h-[90px]">

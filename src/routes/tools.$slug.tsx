@@ -4,6 +4,7 @@ import { Star } from "lucide-react";
 import { toolBySlug, categoryById } from "@/lib/tools";
 import { toolRegistry } from "@/components/tools/registry";
 import { RelatedTools } from "@/components/RelatedTools";
+import { ToolBreadcrumb } from "@/components/ToolBreadcrumb";
 import { ToolGuide } from "@/components/ToolGuide";
 import { AdTopBanner, AdWorkspaceNative } from "@/components/ads/AdSlots";
 import { useFavorites, useRecentlyUsed } from "@/lib/storage";
@@ -44,6 +45,23 @@ export const Route = createFileRoute("/tools/$slug")({
             offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
           }),
         },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "/" },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: categoryById(loaderData.category).name,
+                item: `/category/${loaderData.category}`,
+              },
+              { "@type": "ListItem", position: 3, name: loaderData.name },
+            ],
+          }),
+        },
       ],
     };
   },
@@ -64,7 +82,8 @@ function ToolPage() {
   const fav = isFavorite(tool.slug);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pb-24 pt-8 sm:px-6">
+    <div className="mx-auto max-w-5xl px-4 pb-28 pt-8 sm:px-6 lg:pb-16">
+      <ToolBreadcrumb tool={tool} />
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">

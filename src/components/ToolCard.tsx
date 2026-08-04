@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { motion } from "motion/react";
 import { Star } from "lucide-react";
 import { categoryById, type ToolMeta } from "@/lib/tools";
 import { useFavorites } from "@/lib/storage";
@@ -13,7 +14,11 @@ export function ToolCard({ tool }: { tool: ToolMeta }) {
   const cat = categoryById(tool.category);
 
   return (
-    <article className="group relative flex min-h-[150px] flex-col rounded-2xl border border-glass-border bg-card p-3 transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_10px_30px_-12px_var(--primary)] active:translate-y-0 sm:p-4">
+    <motion.article
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.985 }}
+      transition={{ type: "spring", stiffness: 320, damping: 22 }}
+      className="group relative flex min-h-[150px] flex-col rounded-2xl border border-glass-border bg-card p-3 transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_10px_30px_-12px_var(--primary)] active:translate-y-0 sm:p-4">
       <div className="flex items-start justify-between gap-2">
         <span className="inline-flex items-center gap-1 rounded-full border border-glass-border bg-surface px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
           <span aria-hidden="true">{cat.emoji}</span>
@@ -47,7 +52,7 @@ export function ToolCard({ tool }: { tool: ToolMeta }) {
       <span className="mt-2 text-xs font-semibold text-primary opacity-0 transition-opacity group-hover:opacity-100">
         Open tool →
       </span>
-    </article>
+    </motion.article>
   );
 }
 
@@ -62,7 +67,13 @@ export function ToolGrid({ items, ads = true }: { items: ToolMeta[]; ads?: boole
   });
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+    <motion.div
+      layout
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 lg:gap-4"
+    >
       {cells.map((cell) =>
         cell.type === "tool" ? (
           <ToolCard key={cell.tool.slug} tool={cell.tool} />
@@ -70,6 +81,6 @@ export function ToolGrid({ items, ads = true }: { items: ToolMeta[]; ads?: boole
           <AdInFeedCard key={cell.key} />
         ),
       )}
-    </div>
+    </motion.div>
   );
 }

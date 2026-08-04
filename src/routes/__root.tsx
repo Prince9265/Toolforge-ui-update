@@ -4,10 +4,12 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { AnimatePresence, motion } from "motion/react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -142,6 +144,24 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+/** Fades each route view in; the pathname key restarts the animation per page. */
+function PageTransition() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={pathname}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -6 }}
+        transition={{ duration: 0.22, ease: "easeOut" }}
+      >
+        <Outlet />
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
@@ -154,9 +174,9 @@ function RootComponent() {
       */}
       <div className="mx-auto grid w-full max-w-[1920px] grid-cols-1 gap-6 px-0 min-[1440px]:grid-cols-[160px_minmax(0,1fr)_160px] min-[1440px]:gap-8 min-[1440px]:px-6">
         <AdRail side="left" />
-        <main className="min-w-0">
+        <main className="min-w-0 pb-16 lg:pb-0">
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
+          <PageTransition />
         </main>
         <AdRail side="right" />
       </div>
