@@ -35,7 +35,7 @@ function FavoritesPage() {
   const items = favorites.map(toolBySlug).filter(Boolean) as ToolMeta[];
 
   return (
-    <div className="mx-auto max-w-[1600px] px-4 pb-24 pt-10 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 pb-24 pt-10 sm:px-6">
       <h1 className="flex items-center gap-2 font-display text-3xl font-black sm:text-5xl">
         <Star className="size-7 fill-primary text-primary" aria-hidden="true" />
         Favorites

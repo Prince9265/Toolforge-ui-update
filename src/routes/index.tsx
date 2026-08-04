@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search, Zap, ShieldCheck, Clock, Star } from "lucide-react";
-import { categories, searchTools, tools, toolBySlug } from "@/lib/tools";
+import { searchTools, tools, toolBySlug } from "@/lib/tools";
 import { ToolGrid } from "@/components/ToolCard";
+import { CategoryPills } from "@/components/CategoryPills";
 import { AdTopBanner, AdWorkspaceNative } from "@/components/ads/AdSlots";
 import { useFavorites, useRecentlyUsed } from "@/lib/storage";
 
@@ -103,7 +104,7 @@ function Home() {
 
       <AdTopBanner />
 
-      <div className="mx-auto max-w-[1600px] px-4 pb-20 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
         {recent.length > 0 && (
           <section aria-labelledby="recent-heading" className="mb-8">
             <h2
@@ -121,7 +122,7 @@ function Home() {
                     <Link
                       to="/tools/$slug"
                       params={{ slug }}
-                      className="inline-flex min-h-11 items-center rounded-xl border border-glass-border bg-card px-4 text-sm font-medium"
+                      className="inline-flex min-h-11 items-center rounded-xl border border-glass-border bg-card px-4 text-sm font-medium transition-transform active:scale-95"
                     >
                       {tool.name}
                     </Link>
@@ -147,23 +148,7 @@ function Home() {
           </section>
         )}
 
-        <div role="tablist" aria-label="Filter by category" className="mb-5 flex flex-wrap gap-2">
-          {[{ id: "all", name: "All tools" }, ...categories].map((c) => (
-            <button
-              key={c.id}
-              role="tab"
-              aria-selected={cat === c.id}
-              onClick={() => setCat(c.id)}
-              className={`min-h-11 rounded-xl px-4 text-sm font-semibold transition-colors ${
-                cat === c.id
-                  ? "bg-primary text-primary-foreground"
-                  : "border border-glass-border bg-surface text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {c.name}
-            </button>
-          ))}
-        </div>
+        <CategoryPills active={cat} onChange={setCat} />
 
         {results.length === 0 ? (
           <p className="rounded-2xl border border-glass-border bg-card p-10 text-center text-sm text-muted-foreground">
@@ -174,7 +159,30 @@ function Home() {
         )}
 
         <AdWorkspaceNative />
+
+        <section className="mt-4 rounded-2xl border border-glass-border bg-card p-6 sm:p-8">
+          <h2 className="font-display text-xl font-black sm:text-2xl">
+            Why ToolForge runs entirely in your browser
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            Most online utilities upload your files or text to a remote server before giving you a
+            result. ToolForge does the opposite: every one of the {tools.length} tools listed above
+            is implemented in JavaScript, WebAssembly or the Canvas API and executes locally on your
+            own device. Nothing you paste, drop or generate is transmitted anywhere, which makes the
+            platform safe for API tokens, client contracts, invoices and unpublished drafts.
+          </p>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            Working locally is also faster. There is no upload wait, no processing queue and no rate
+            limit — a 20&nbsp;MB image compresses as quickly as your CPU allows, and once a tool page
+            has loaded it keeps working even without a connection. Pick a category pill above to jump
+            straight to AI utilities, developer and data tools, image and media processing, web and
+            text helpers, or calculators and converters. Every tool page includes step-by-step usage
+            notes, feature highlights and real use cases so you always know exactly what the tool
+            does before you run it.
+          </p>
+        </section>
       </div>
     </>
   );
 }
+

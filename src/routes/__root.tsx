@@ -11,10 +11,11 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { siteConfig } from "@/lib/site-config";
 import { Header } from "@/components/Header";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/Footer";
-import { AdSkyscraper, AdMobileAnchor } from "@/components/ads/AdSlots";
+import { AdRail, AdMobileAnchor } from "@/components/ads/AdSlots";
 
 function NotFoundComponent() {
   return (
@@ -81,10 +82,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "ToolForge — Free Browser-Based Online Tools" },
+      {
+        name: "description",
+        content:
+          "74+ free, private, 100% client-side web tools for developers, creators and marketers. No signup, no uploads, no data collection.",
+      },
+      { property: "og:site_name", content: "ToolForge" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -94,6 +98,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+    ],
+    scripts: [
+      ...(siteConfig.adsenseClientId
+        ? [
+            {
+              src: `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${siteConfig.adsenseClientId}`,
+              async: true,
+              crossOrigin: "anonymous" as const,
+            },
+          ]
+        : []),
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "ToolForge",
+          description:
+            "Free, private, 100% client-side web tools for developers, creators and marketers.",
+          publisher: { "@type": "Organization", name: "ToolForge" },
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -122,16 +148,23 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Header />
-      <AdSkyscraper side="left" />
-      <AdSkyscraper side="right" />
-      <main className="2xl:px-[190px]">
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-      </main>
+      {/*
+        3-column shell: ad rails live in their own structural columns and
+        collapse entirely below 1440px, so they can never overlay content.
+      */}
+      <div className="mx-auto grid w-full max-w-[1920px] grid-cols-1 gap-6 px-0 min-[1440px]:grid-cols-[160px_minmax(0,1fr)_160px] min-[1440px]:gap-8 min-[1440px]:px-6">
+        <AdRail side="left" />
+        <main className="min-w-0">
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </main>
+        <AdRail side="right" />
+      </div>
       <Footer />
       <AdMobileAnchor />
       <Toaster />
     </QueryClientProvider>
   );
 }
+
 

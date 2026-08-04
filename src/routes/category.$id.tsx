@@ -41,7 +41,7 @@ function CategoryPage() {
   const items = tools.filter((t) => t.category === (cat.id as CategoryId));
 
   return (
-    <div className="mx-auto max-w-[1600px] px-4 pb-24 pt-10 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 pb-24 pt-10 sm:px-6">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Category</p>
       <h1 className="mt-1 font-display text-3xl font-black sm:text-5xl">{cat.name}</h1>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">{cat.tagline}</p>

@@ -4,6 +4,7 @@ import { Star } from "lucide-react";
 import { toolBySlug, categoryById } from "@/lib/tools";
 import { toolRegistry } from "@/components/tools/registry";
 import { RelatedTools } from "@/components/RelatedTools";
+import { ToolGuide } from "@/components/ToolGuide";
 import { AdTopBanner, AdWorkspaceNative } from "@/components/ads/AdSlots";
 import { useFavorites, useRecentlyUsed } from "@/lib/storage";
 
@@ -63,11 +64,11 @@ function ToolPage() {
   const fav = isFavorite(tool.slug);
 
   return (
-    <div className="mx-auto max-w-[1500px] px-4 pb-24 pt-8 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 pb-24 pt-8 sm:px-6">
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            {categoryById(tool.category).name}
+            {categoryById(tool.category).emoji} {categoryById(tool.category).name}
           </p>
           <h1 className="mt-1 text-2xl font-black sm:text-4xl">{tool.name}</h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
@@ -79,7 +80,7 @@ function ToolPage() {
           onClick={() => toggle(tool.slug)}
           aria-pressed={fav}
           aria-label={fav ? "Remove from favorites" : "Add to favorites"}
-          className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-glass-border bg-surface px-4 text-sm font-semibold"
+          className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-glass-border bg-surface px-4 text-sm font-semibold transition-transform active:scale-95"
         >
           <Star className={`size-4 ${fav ? "fill-primary text-primary" : ""}`} aria-hidden="true" />
           <span className="hidden sm:inline">{fav ? "Saved" : "Save"}</span>
@@ -90,9 +91,12 @@ function ToolPage() {
 
       <div className="mt-2">{Tool ? <Tool /> : null}</div>
 
+      <ToolGuide tool={tool} />
+
       <AdWorkspaceNative />
 
       <RelatedTools slug={tool.slug} />
     </div>
   );
 }
+

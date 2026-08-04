@@ -5,8 +5,11 @@ export type CategoryId = "ai" | "dev" | "media" | "web" | "calc";
 export interface ToolCategory {
   id: CategoryId;
   name: string;
+  /** Short label used by the mobile pill navigation. */
+  shortName: string;
   tagline: string;
   icon: string;
+  emoji: string;
 }
 
 export interface ToolMeta {
@@ -24,33 +27,43 @@ export interface ToolMeta {
 export const categories: ToolCategory[] = [
   {
     id: "ai",
-    name: "AI & Modern",
-    tagline: "Prompt craft, detection and social copy",
+    name: "AI & Smart Utilities",
+    shortName: "AI",
+    tagline: "Prompt craft, humanizing, refactoring and social copy",
     icon: "Sparkles",
+    emoji: "✨",
   },
   {
     id: "dev",
     name: "Developer & Data",
-    tagline: "JSON, JWT, SQL, regex and diffing",
+    shortName: "Dev",
+    tagline: "JSON, JWT, SQL, regex, Base64 and minifiers",
     icon: "Braces",
+    emoji: "🧑‍💻",
   },
   {
     id: "media",
-    name: "Media & Files",
-    tagline: "Compress, convert and edit in-browser",
+    name: "Image & Media",
+    shortName: "Media",
+    tagline: "Compress, resize, convert and edit fully in-browser",
     icon: "Image",
+    emoji: "🖼️",
   },
   {
     id: "web",
-    name: "Web, SEO & Text",
-    tagline: "Markdown, meta tags, hashes and counters",
+    name: "Web & Text Utilities",
+    shortName: "Web",
+    tagline: "Markdown, meta tags, hashes, counters and text tools",
     icon: "Globe",
+    emoji: "🌐",
   },
   {
     id: "calc",
     name: "Calculators & Converters",
-    tagline: "Dates, units, finance and percentages",
+    shortName: "Calc",
+    tagline: "Dates, units, finance, percentages and CSS units",
     icon: "Calculator",
+    emoji: "🧮",
   },
 ];
 

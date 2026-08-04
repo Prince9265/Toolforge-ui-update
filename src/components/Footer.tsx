@@ -4,8 +4,11 @@ import { categories, tools } from "@/lib/tools";
 import { siteConfig } from "@/lib/site-config";
 
 const legal = [
+  { to: "/about", label: "About Us" },
+  { to: "/contact", label: "Contact Us" },
   { to: "/privacy", label: "Privacy Policy" },
   { to: "/terms", label: "Terms of Service" },
+  { to: "/disclaimer", label: "Disclaimer" },
   { to: "/adsense-disclaimer", label: "AdSense Disclaimer" },
   { to: "/cookies", label: "Cookie Policy" },
 ] as const;
@@ -15,7 +18,7 @@ export function Footer() {
 
   return (
     <footer className="mt-16 border-t border-glass-border bg-surface/60">
-      <div className="mx-auto grid max-w-[1600px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground">

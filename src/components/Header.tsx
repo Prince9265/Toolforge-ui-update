@@ -42,12 +42,12 @@ export function Header() {
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-glass-border bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto grid max-w-[1600px] grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-3 sm:px-6">
+        <div className="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-3 sm:px-6">
           <Link to="/" className="flex min-w-0 items-center gap-2" aria-label="ToolForge home">
             <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground">
               <Flame className="size-5" aria-hidden="true" />
             </span>
-            <span className="truncate font-display text-lg font-bold tracking-tight">
+            <span className="whitespace-nowrap font-display text-lg font-bold tracking-tight">
               Tool<span className="text-primary">Forge</span>
             </span>
           </Link>
