@@ -1,4 +1,4 @@
-import type { JSX } from "react";
+import type { ComponentType } from "react";
 import { AiPromptEnhancer, AiTextHumanizer, SocialBioGenerator } from "./ai";
 import { JsonFormatter, JwtDecoder, SqlFormatter, RegexDiff } from "./dev";
 import { ImageCompressor, SvgToPng, PdfToolkit } from "./media";
@@ -8,8 +8,10 @@ import {
   PasswordHashGenerator,
   WordCounter,
 } from "./web";
+import { legacyRegistry } from "@/legacy/registry";
 
-export const toolRegistry: Record<string, () => JSX.Element> = {
+export const toolRegistry: Record<string, ComponentType> = {
+  ...legacyRegistry,
   "ai-prompt-enhancer": AiPromptEnhancer,
   "ai-text-humanizer": AiTextHumanizer,
   "social-bio-generator": SocialBioGenerator,

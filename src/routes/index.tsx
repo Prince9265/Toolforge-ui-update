@@ -9,7 +9,7 @@ import { useFavorites, useRecentlyUsed } from "@/lib/storage";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ToolForge — 14 Free Browser-Based Web Utilities" },
+      { title: `ToolForge — ${tools.length}+ Free Browser-Based Web Utilities` },
       {
         name: "description",
         content:
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "ToolForge — Free All-in-One Web Utility Platform" },
       {
         property: "og:description",
-        content: "14 privacy-first browser tools for developers, creators and marketers.",
+        content: `${tools.length}+ privacy-first browser tools for developers, creators and marketers.`,
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/" },
@@ -66,8 +66,8 @@ function Home() {
             <span className="forge-gradient-text">forged in your browser</span>
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground">
-            14 fast, private tools for developers, creators and marketers. Your files never leave
-            this device.
+            {tools.length}+ fast, private tools for developers, creators and marketers. Your files
+            never leave this device.
           </p>
 
           <div className="relative mx-auto mt-8 max-w-xl">

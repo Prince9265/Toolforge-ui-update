@@ -13,6 +13,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/Header";
 import { Toaster } from "@/components/ui/sonner";
+import { Footer } from "@/components/Footer";
+import { AdSkyscraper, AdMobileAnchor } from "@/components/ads/AdSlots";
 
 function NotFoundComponent() {
   return (
@@ -81,12 +83,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Lovable App" },
       { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
       { property: "og:title", content: "Lovable App" },
       { property: "og:description", content: "Lovable Generated Project" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -122,17 +122,14 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Header />
-      <main>
+      <AdSkyscraper side="left" />
+      <AdSkyscraper side="right" />
+      <main className="2xl:px-[190px]">
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
       </main>
-      <footer className="border-t border-border px-4 py-8 text-center text-sm text-muted-foreground sm:px-6">
-        <p className="font-semibold text-foreground">ToolForge</p>
-        <p className="mt-1">
-          Privacy-first browser utilities. Nothing you paste or upload ever leaves your device.
-        </p>
-        <p className="mt-3 text-xs">© {new Date().getFullYear()} ToolForge</p>
-      </footer>
+      <Footer />
+      <AdMobileAnchor />
       <Toaster />
     </QueryClientProvider>
   );

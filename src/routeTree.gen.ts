@@ -10,11 +10,47 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdsenseDisclaimerRouteImport } from './routes/adsense-disclaimer'
+import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as FavoritesRouteImport } from './routes/favorites'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as CategoryIdRouteImport } from './routes/category.$id'
 import { Route as ToolsSlugRouteImport } from './routes/tools.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdsenseDisclaimerRoute = AdsenseDisclaimerRouteImport.update({
+  id: '/adsense-disclaimer',
+  path: '/adsense-disclaimer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoryIdRoute = CategoryIdRouteImport.update({
+  id: '/category/$id',
+  path: '/category/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ToolsSlugRoute = ToolsSlugRouteImport.update({
@@ -25,27 +61,76 @@ const ToolsSlugRoute = ToolsSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/adsense-disclaimer': typeof AdsenseDisclaimerRoute
+  '/cookies': typeof CookiesRoute
+  '/favorites': typeof FavoritesRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
+  '/category/$id': typeof CategoryIdRoute
   '/tools/$slug': typeof ToolsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/adsense-disclaimer': typeof AdsenseDisclaimerRoute
+  '/cookies': typeof CookiesRoute
+  '/favorites': typeof FavoritesRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
+  '/category/$id': typeof CategoryIdRoute
   '/tools/$slug': typeof ToolsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/adsense-disclaimer': typeof AdsenseDisclaimerRoute
+  '/cookies': typeof CookiesRoute
+  '/favorites': typeof FavoritesRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
+  '/category/$id': typeof CategoryIdRoute
   '/tools/$slug': typeof ToolsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/tools/$slug'
+  fullPaths:
+    | '/'
+    | '/adsense-disclaimer'
+    | '/cookies'
+    | '/favorites'
+    | '/privacy'
+    | '/terms'
+    | '/category/$id'
+    | '/tools/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/tools/$slug'
-  id: '__root__' | '/' | '/tools/$slug'
+  to:
+    | '/'
+    | '/adsense-disclaimer'
+    | '/cookies'
+    | '/favorites'
+    | '/privacy'
+    | '/terms'
+    | '/category/$id'
+    | '/tools/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/adsense-disclaimer'
+    | '/cookies'
+    | '/favorites'
+    | '/privacy'
+    | '/terms'
+    | '/category/$id'
+    | '/tools/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdsenseDisclaimerRoute: typeof AdsenseDisclaimerRoute
+  CookiesRoute: typeof CookiesRoute
+  FavoritesRoute: typeof FavoritesRoute
+  PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
+  CategoryIdRoute: typeof CategoryIdRoute
   ToolsSlugRoute: typeof ToolsSlugRoute
 }
 
@@ -56,6 +141,48 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/adsense-disclaimer': {
+      id: '/adsense-disclaimer'
+      path: '/adsense-disclaimer'
+      fullPath: '/adsense-disclaimer'
+      preLoaderRoute: typeof AdsenseDisclaimerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/category/$id': {
+      id: '/category/$id'
+      path: '/category/$id'
+      fullPath: '/category/$id'
+      preLoaderRoute: typeof CategoryIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tools/$slug': {
@@ -70,6 +197,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdsenseDisclaimerRoute: AdsenseDisclaimerRoute,
+  CookiesRoute: CookiesRoute,
+  FavoritesRoute: FavoritesRoute,
+  PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
+  CategoryIdRoute: CategoryIdRoute,
   ToolsSlugRoute: ToolsSlugRoute,
 }
 export const routeTree = rootRouteImport

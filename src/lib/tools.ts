@@ -1,4 +1,6 @@
-export type CategoryId = "ai" | "dev" | "media" | "web";
+import { legacyTools } from "./legacy-tools";
+
+export type CategoryId = "ai" | "dev" | "media" | "web" | "calc";
 
 export interface ToolCategory {
   id: CategoryId;
@@ -44,9 +46,16 @@ export const categories: ToolCategory[] = [
     tagline: "Markdown, meta tags, hashes and counters",
     icon: "Globe",
   },
+  {
+    id: "calc",
+    name: "Calculators & Converters",
+    tagline: "Dates, units, finance and percentages",
+    icon: "Calculator",
+  },
 ];
 
-export const tools: ToolMeta[] = [
+
+const baseTools: ToolMeta[] = [
   {
     slug: "ai-prompt-enhancer",
     name: "AI Prompt Enhancer",
@@ -186,6 +195,8 @@ export const tools: ToolMeta[] = [
     popular: true,
   },
 ];
+
+export const tools: ToolMeta[] = [...baseTools, ...legacyTools];
 
 export const toolBySlug = (slug: string) => tools.find((t) => t.slug === slug);
 
